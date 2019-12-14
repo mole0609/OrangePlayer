@@ -1,34 +1,38 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
 class SecondScreen extends StatefulWidget {
+  File _file;
+
+  SecondScreen(File file) {
+    _file = file;
+  }
+
   @override
-  _SecondScreenState createState() => _SecondScreenState();
+  _SecondScreenState createState() => _SecondScreenState(_file);
 }
 
 class _SecondScreenState extends State<SecondScreen> {
   VideoPlayerController _controller;
   String path;
+  File _file;
+
+  _SecondScreenState(File file) {
+    _file = file;
+  }
 
   @override
   void initState() {
-    _onPress();
-    print(path);
-//    _controller = VideoPlayerController.asset("assets/video/flutter.mp4")
-    _controller = VideoPlayerController.file(File("file://" + path))
-      ..initialize().then((_) {
-        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-        setState(() {});
-      });
-  }
-
-  Future _onPress() async {
-    Directory sdcardDir = await getExternalStorageDirectory();
-    String sdcardPath = sdcardDir.path;
-    path = sdcardPath;
+    print('NYDBG file.path = $_file');
+    _controller = VideoPlayerController.file(_file);
+    _controller.initialize().then((_) {
+      print('NYDBG initialize');
+      // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+      setState(() {});
+    });
   }
 
   @override
@@ -42,11 +46,9 @@ class _SecondScreenState extends State<SecondScreen> {
                     aspectRatio: _controller.value.aspectRatio,
                     child: VideoPlayer(_controller),
                   )
-                : Container(),
-            FlatButton(
-              color: Colors.blue,
-              onPressed: _onPress,
-            )
+                : Container(
+                    child: Text("22222"),
+                  ),
           ],
         ),
       ),
