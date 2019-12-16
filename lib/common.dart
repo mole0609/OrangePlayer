@@ -74,4 +74,29 @@ class Common {
     }
     return iconImg;
   }
+
+  String switchType(String path) {
+    String type = 'unknown';
+    switch (path) {
+      case '.jpg':
+      case '.jpeg':
+      case '.png':
+        type = 'image';
+        break;
+      case '.txt':
+        type = 'text';
+        break;
+      case '.mp3':
+        type = 'music';
+        break;
+      case '.mp4':
+        type = 'video';
+        break;
+      default:
+        type = 'unknown';
+        break;
+    }
+    print('NYDBG type $type');
+    return type;
+  }
 }

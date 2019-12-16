@@ -59,7 +59,9 @@ class _FileManagerState extends State<FileManager> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            parentDir?.path == Common().sDCardDir ? 'SD Card' : p.basename(parentDir.path),
+            parentDir?.path == Common().sDCardDir
+                ? 'SD Card'
+                : p.basename(parentDir.path),
             style: TextStyle(color: Colors.black),
           ),
           centerTitle: true,
@@ -67,7 +69,9 @@ class _FileManagerState extends State<FileManager> {
           elevation: 0.0,
           leading: parentDir?.path == Common().sDCardDir
               ? Container()
-              : IconButton(icon: Icon(Icons.chevron_left, color: Colors.black), onPressed: onWillPop),
+              : IconButton(
+                  icon: Icon(Icons.chevron_left, color: Colors.black),
+                  onPressed: onWillPop),
         ),
         body: files.length == 0
             ? Center(child: Text('The folder is empty'))
@@ -94,21 +98,26 @@ class _FileManagerState extends State<FileManager> {
   }
 
   Widget _buildFileItem(FileSystemEntity file) {
-    String modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN').format(file.statSync().modified.toLocal());
+    String modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
+        .format(file.statSync().modified.toLocal());
 
     return InkWell(
       child: Container(
         decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
+          border:
+              Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
         ),
         child: ListTile(
           leading: Image.asset(Common().selectIcon(p.extension(file.path))),
           title: Text(file.path.substring(file.parent.path.length + 1)),
-          subtitle: Text('$modifiedTime  ${Common().getFileSize(file.statSync().size)}', style: TextStyle(fontSize: 12.0)),
+          subtitle: Text(
+              '$modifiedTime  ${Common().getFileSize(file.statSync().size)}',
+              style: TextStyle(fontSize: 12.0)),
         ),
       ),
       onTap: () {
-        openFile(file.path);
+//        openFile(file.path);
+        openFile(file);
       },
       onLongPress: () {
         showModalBottomSheet(
@@ -119,7 +128,8 @@ class _FileManagerState extends State<FileManager> {
               children: <Widget>[
                 CupertinoButton(
                   pressedOpacity: 0.6,
-                  child: Text('重命名', style: TextStyle(color: Color(0xff333333))),
+                  child:
+                      Text('重命名', style: TextStyle(color: Color(0xff333333))),
                   onPressed: () {
                     Navigator.pop(context);
                     renameFile(file);
@@ -142,18 +152,22 @@ class _FileManagerState extends State<FileManager> {
   }
 
   Widget _buildFolderItem(FileSystemEntity file) {
-    String modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN').format(file.statSync().modified.toLocal());
+    String modifiedTime = DateFormat('yyyy-MM-dd HH:mm:ss', 'zh_CN')
+        .format(file.statSync().modified.toLocal());
 
     return InkWell(
       child: Container(
         decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
+          border:
+              Border(bottom: BorderSide(width: 0.5, color: Color(0xffe5e5e5))),
         ),
         child: ListTile(
           leading: Image.asset('assets/images/folder.png'),
           title: Row(
             children: <Widget>[
-              Expanded(child: Text(file.path.substring(file.parent.path.length + 1))),
+              Expanded(
+                  child:
+                      Text(file.path.substring(file.parent.path.length + 1))),
               Text(
                 '${_calculateFilesCountByFolder(file)}项',
                 style: TextStyle(color: Colors.grey),
@@ -180,7 +194,8 @@ class _FileManagerState extends State<FileManager> {
               children: <Widget>[
                 CupertinoButton(
                   pressedOpacity: 0.6,
-                  child: Text('重命名', style: TextStyle(color: Color(0xff333333))),
+                  child:
+                      Text('重命名', style: TextStyle(color: Color(0xff333333))),
                   onPressed: () {
                     Navigator.pop(context);
                     renameFile(file);
@@ -296,9 +311,11 @@ class _FileManagerState extends State<FileManager> {
                 child: TextField(
                   controller: _controller,
                   decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(2.0)),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(2.0)),
                     hintText: '请输入新名称',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(2.0)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(2.0)),
                     contentPadding: EdgeInsets.all(10.0),
                   ),
                 ),
@@ -315,11 +332,15 @@ class _FileManagerState extends State<FileManager> {
                   onPressed: () async {
                     String newName = _controller.text;
                     if (newName.trim().length == 0) {
-                      Fluttertoast.showToast(msg: '名字不能为空', gravity: ToastGravity.CENTER);
+                      Fluttertoast.showToast(
+                          msg: '名字不能为空', gravity: ToastGravity.CENTER);
                       return;
                     }
 
-                    String newPath = file.parent.path + '/' + newName + p.extension(file.path);
+                    String newPath = file.parent.path +
+                        '/' +
+                        newName +
+                        p.extension(file.path);
                     file.renameSync(newPath);
                     initPathFiles(file.parent.path);
 
@@ -351,14 +372,33 @@ class _FileManagerState extends State<FileManager> {
     }
 
     _files.sort((a, b) => a.path.toLowerCase().compareTo(b.path.toLowerCase()));
-    _folder.sort((a, b) => a.path.toLowerCase().compareTo(b.path.toLowerCase()));
+    _folder
+        .sort((a, b) => a.path.toLowerCase().compareTo(b.path.toLowerCase()));
     files.clear();
     files.addAll(_folder);
     files.addAll(_files);
   }
 
-  Future openFile(String path) async {
+  Future openPath(String path) async {
     final Map<String, dynamic> args = <String, dynamic>{'path': path};
     await _channel.invokeMethod('openFile', args);
+  }
+
+  Future openFile(File file) async {
+    print('openFile path = $file');
+    String type = Common().switchType(p.extension(file.path));
+    switch (type) {
+      case 'image':
+        break;
+      case 'text':
+        break;
+      case 'music':
+        break;
+      case 'video':
+        Navigator.of(context).push(new MaterialPageRoute(builder: (_) {
+          return new SecondScreen(file);
+        }));
+        break;
+    }
   }
 }

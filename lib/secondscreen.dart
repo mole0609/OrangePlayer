@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -26,13 +25,14 @@ class _SecondScreenState extends State<SecondScreen> {
 
   @override
   void initState() {
-    print('NYDBG file.path = $_file');
-    _controller = VideoPlayerController.file(_file);
-    _controller.initialize().then((_) {
-      print('NYDBG initialize');
-      // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-      setState(() {});
-    });
+    if (_file != null) {
+      print('NYDBG file.path = $_file');
+      _controller = VideoPlayerController.file(_file)
+        ..initialize().then((_) {
+          // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+          setState(() {});
+        });
+    }
   }
 
   @override
